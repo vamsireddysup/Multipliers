@@ -1,4 +1,3 @@
-`timescale 1ns/1ps
 module tb_array_multiplier;
 parameter N = 8;
 logic clk;
@@ -34,7 +33,7 @@ initial begin
  rst_n = 0;
  #20 rst_n = 1;
  cover_inst = new;
- repeat (100) begin
+ repeat (1000_0) begin
   // randomize inputs each clock
   @(posedge clk);
   tb_a = $urandom;
@@ -48,8 +47,13 @@ initial begin
   end
   cover_inst.sample();
  end
+<<<<<<< HEAD
  $display("All %0d tests passed!", 100	);
  $display("Coverage: a low/mid/high each: %0t", $time);
+=======
+ $display("All %0d tests passed!", 1000_0);
+ $display("Coverage End @: %0t", $time);
+>>>>>>> c24c17437823e2b205f8eeb88234ffb59d3f412d
  $finish;
 end
 
