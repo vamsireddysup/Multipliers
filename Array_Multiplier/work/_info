@@ -1,0 +1,76 @@
+m255
+K4
+z2
+!s12c _opt
+Z0 !s99 nomlopt
+!s11f vlog 2024.1 2024.04, Apr 19 2024
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z1 d/home/vamsidhar-reddy-eraganeni/Desktop/GitHub/Multipliers/Array_Multiplier
+T_opt
+!s110 1745995568
+Vh_3_W24g7djb_f==ZRYK`1
+04 19 4 work tb_array_multiplier fast 0
+=1-000ae431a4f1-6811c730-61ba1-1c6ad
+R0
+!s12f OEM100
+!s12b OEM100
+!s124 OEM10U2 
+o-quiet -auto_acc_if_foreign -work work
+Z2 tCvgOpt 0
+n@_opt
+OL;O;2024.1;79
+varray_multiplier
+Z3 2array_multiplier.sv|tb_array_multiplier.sv
+Z4 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z5 !s110 1745995400
+!i10b 1
+!s100 F1VHBMKL2YlV=;o6]7h410
+INOO>b[f9YQAFko<DRICM=3
+S1
+R1
+w1745995257
+8array_multiplier.sv
+Farray_multiplier.sv
+!i122 0
+L0 1 21
+Z6 VDg1SIo80bB@j0V0VzS_@n1
+Z7 OL;L;2024.1;79
+r1
+!s85 0
+31
+Z8 !s108 1745995400.000000
+Z9 !s107 tb_array_multiplier.sv|array_multiplier.sv|
+Z10 !s90 array_multiplier.sv|tb_array_multiplier.sv|
+!i113 0
+Z11 o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R2
+vtb_array_multiplier
+R3
+R4
+R5
+!i10b 1
+!s100 QE^bDVc=GFHXBO:0@2mz`2
+IWg8aPjQGg9zAHXP:Un2IP1
+S1
+R1
+w1745995376
+8tb_array_multiplier.sv
+Ftb_array_multiplier.sv
+!i122 0
+L0 2 55
+R6
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 0
+R11
+R2
