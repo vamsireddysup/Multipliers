@@ -48,7 +48,7 @@ initial begin
   end
   cover_inst.sample();
  end
- $display("All %0d tests passed!", 100);
+ $display("All %0d tests passed!", 100	);
  $display("Coverage: a low/mid/high each: %0t", $time);
  $finish;
 end
