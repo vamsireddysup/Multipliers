@@ -1,56 +1,50 @@
-# Multipliers
+# Hardware Multipliers
 
-This repository _Multipliers_ collects a variety of high-performance, parameterized multiplier and adder architectures implemented in SystemVerilog. Each design includes a structural implementation, a randomized self-checking testbench, and functional coverage metrics. After completing and verifying each module, its architecture and usage details will be documented here.
+SystemVerilog implementations of hardware multiplier architectures, exploring different design trade-offs in area, speed, and power consumption.
 
-## Contents
+## Repository Structure
 
-- **Array Multiplier**
-- **Baugh–Wooley Multiplier**
-- **Dadda Multiplier**
-- **Radix-4 Booth Multiplier**
-- **Approximate Radix-4 Booth Multiplier**
-- **Wallace Tree Multiplier**
+```
+multipliers/
+├── Array_Multiplier/    # Array multiplier RTL implementation and testbench
+└── README.md
+```
 
-- **Adder Architectures:**
-  - Brent–Kung Adder
-  - Carry Propagate Adder (Ripple-Carry)
-  - Carry Save Adder
-  - Carry Select Adder
-  - Carry Skip Adder
-  - Kogge–Stone Adder
-  - Exact Compressor Adders
+## Implemented Architectures
 
----
+### Array Multiplier
+A combinational multiplier using a two-dimensional array of AND gates and adders.
 
-## Array Multiplier
+| Attribute  | Value                          |
+|------------|--------------------------------|
+| Type       | Combinational                  |
+| Complexity | O(n²) gates                   |
+| Delay      | O(n) carry propagation stages  |
+| Area       | O(n²)                         |
 
-The **Array Multiplier** is a straightforward, bit‐parallel multiplier that uses an N×N grid of AND gates to form partial products and a cascade of adders to accumulate them. It has:
+**How it works:**
+1. Generate partial products: each bit of multiplier ANDed with multiplicand
+2. Sum all partial product rows using a carry-save adder tree
+3. Final addition with ripple-carry or carry-lookahead adder
 
-1. **Partial‐Product Generation:** For each bit of the multiplier, an AND operation with the entire multiplicand generates a row of partial products.
-2. **Shifted Summation:** Each partial row is shifted according to its bit position.
-3. **Ripple‐Addition:** An array of full‐adders (or carry‐save adders in optimized versions) summing column by column.
+## Design Comparison (Planned)
 
-### Key Characteristics
+| Architecture      | Gate Count | Critical Path | Notes              |
+|-------------------|------------|---------------|--------------------|
+| Array Multiplier  | O(n²)      | O(n)          | Simple, slow       |
+| Booth Multiplier  | O(n²/2)    | O(n)          | Fewer partial prods|
+| Wallace Tree      | O(n²)      | O(log n)      | Fast, complex      |
 
-- **Regular structure:** Easy to lay out and pipeline
-- **Area Complexity:** O(N²) gates
-- **Latency:** O(N) adder stages
+## Tools
 
-### Simple Example (4 × 4)
+- **SystemVerilog**: RTL implementation
+- **QuestaSim / ModelSim**: Simulation and verification
+- **Synopsys Design Compiler**: Synthesis and area/timing analysis
 
-Multiply `A = 0b1011 (11)` by `B = 0b0110 (6)`:  
+## Simulation
 
-| Bit Position | Partial Products        | Shifted                      |
-|--------------|-------------------------|------------------------------|
-| B[0] = 0     | 0b1011 & 0 → 0000       | 0000                         |
-| B[1] = 1     | 0b1011 & 1 → 1011       | 1011 << 1 → 10110            |
-| B[2] = 1     | 0b1011 & 1 → 1011       | 1011 << 2 → 101100           |
-| B[3] = 0     | 0b1011 & 0 → 0000       | 0000 << 3 → 0000000          |
-| **Sum**      |                         | 0000 + 10110 + 101100 = 1000010 (66)
-
-Result: `11 × 6 = 66 (0b01000010)`.
-
----
-
-*Next up: Baugh–Wooley Multiplier.*
-
+```bash
+# Compile and simulate
+vlog Array_Multiplier/*.sv
+vsim -do "run -all" tb_multiplier
+```
