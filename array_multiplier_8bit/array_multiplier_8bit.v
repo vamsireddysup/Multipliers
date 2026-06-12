@@ -6,7 +6,15 @@ module array_multiplier_8bit(
     input  [7:0]  a, b,
     output [15:0] prod
 );
+    wire [15:0] pp [7:0];
+    genvar k;
 
-    assign prod = a * b;
+    generate
+        for (k = 0; k < 8; k = k + 1) begin : gen_pp
+            assign pp[k] = b[k] ? (a << k) : 16'd0;
+        end
+    endgenerate
+
+    assign prod = pp[0] + pp[1] + pp[2] + pp[3] + pp[4] + pp[5] + pp[6] + pp[7];
 
 endmodule
