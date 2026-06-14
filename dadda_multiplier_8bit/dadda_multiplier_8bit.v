@@ -1,104 +1,200 @@
+// 8-bit Dadda multiplier
+// Generates the 8x8 partial product matrix, then reduces column heights
+// through four Dadda reduction stages using half adders (HA) and full
+// adders (FA), targeting heights 8->6->4->3->2, followed by a final
+// carry-propagate addition of the two remaining rows. See README.md for
+// the column height analysis and stage-by-stage derivation.
 module dadda_multiplier_8bit(
-input [7:0]a,b,
-output [15:0]prod
-    );
-    wire p[7:0][7:0];
-    genvar i,j;
-    generate 
-    for(i=0;i<8;i=i+1)
-    begin
-    for(j=0;j<8;j=j+1)
-    begin
-    assign p[i][j]= a[j] & b[i];
-    end
-    end
+    input  [7:0] a, b,
+    output [15:0] prod
+);
+
+    // Partial product matrix: pp[i][j] = a[j] & b[i], weight = i+j
+    wire pp [7:0][7:0];
+    genvar gi, gj;
+    generate
+        for (gi = 0; gi < 8; gi = gi + 1) begin : row
+            for (gj = 0; gj < 8; gj = gj + 1) begin : col
+                assign pp[gi][gj] = a[gj] & b[gi];
+            end
+        end
     endgenerate
-    
-    halfadder ha1(p[6][0],p[5][1],c0,s0);
-    fulladder fa1(p[7][0],p[6][1],p[5][2],c1,s1);
-    halfadder ha2(p[4][3],p[3][4],c2,s2);
-    fulladder fa2(p[7][1],p[6][2],p[5][3],c3,s3);
-    halfadder ha3(p[4][4],p[3][5],c4,s4);
-    fulladder fa3(p[7][2],p[6][3],p[5][4],c5,s5);
-    halfadder ha4(p[4][0],p[3][1],c6,s6);
-    fulladder fa4(p[5][0],p[4][1],p[3][2],c7,s7);
-    halfadder ha5(p[2][3],p[1][4],c8,s8);
-    fulladder fa5(s0,p[4][2],p[3][3],c9,s9);
-    fulladder fa6(p[2][4],p[1][5],p[0][6],c10,s10);
-    fulladder fa7(s1,c0,s2,c11,s11);
-    fulladder fa8(p[2][5],p[1][6],p[0][7],c12,s12);
-    fulladder fa9(c1,c2,s3,c13,s13);
-    fulladder fa10(s4,p[2][6],p[1][7],c14,s14);
-    fulladder fa11(c3,c4,s5,c15,s15);
-    fulladder fa12(p[4][5],p[3][6],p[2][7],c16,s16);
-    fulladder fa13(c5,p[7][3],p[6][4],c17,s17);
-    fulladder fa14(p[5][5],p[4][6],p[3][7],c18,s18);
-    fulladder fa15(p[7][4],p[6][5],p[5][6],c19,s19);
-    halfadder ha6(p[3][0],p[2][1],c20,s20);
-    fulladder fa16(s6,p[2][2],p[1][3],c21,s21);
-    fulladder fa17(c6,s7,s8,c22,s22);
-    fulladder fa18(c7,c8,s9,c23,s23);
-    fulladder fa19(c9,c10,s11,c24,s24);
-    fulladder fa20(c11,c12,s13,c25,s25);
-    fulladder fa21(c13,c14,s15,c26,s26);
-    fulladder fa22(c15,c16,s17,c27,s27);
-    fulladder fa23(c17,c18,s19,c28,s28);
-    fulladder fa24(c19,p[7][5],p[6][6],c29,s29);
-    halfadder ha7(p[2][0],p[1][1],c30,s30);
-    fulladder fa25(s20,p[1][2],p[0][3],c31,s31);
-    fulladder fa26(c20,s21,p[0][4],c32,s32);
-    fulladder fa27(c21,s22,p[0][5],c33,s33);
-    fulladder fa28(c22,s23,s10,c34,s34);
-    fulladder fa29(c23,s24,s12,c35,s35);
-    fulladder fa30(c24,s25,s14,c36,s36);
-    fulladder fa31(c25,s26,s16,c37,s37);
-    fulladder fa32(c26,s27,s18,c38,s38);
-    fulladder fa33(c27,s28,p[4][7],c39,s39);
-    fulladder fa34(c28,s29,p[5][7],c40,s40);
-    fulladder fa35(c29,p[7][6],p[6][7],c41,s41);
-    halfadder ha8(p[1][0],p[0][1],c42,s42);
-    fulladder fa36(s30,p[0][2],c42,c43,s43);
-    fulladder fa37(c30,s31,c43,c44,s44);
-    fulladder fa38(c31,s32,c44,c45,s45);
-    fulladder fa39(c32,s33,c45,c46,s46);
-    fulladder fa40(c33,s34,c46,c47,s47);
-    fulladder fa41(c34,s35,c47,c48,s48);
-    fulladder fa42(c35,s36,c48,c49,s49);
-    fulladder fa43(c36,s37,c49,c50,s50);
-    fulladder fa44(c37,s38,c50,c51,s51);
-    fulladder fa45(c38,s39,c51,c52,s52);
-    fulladder fa46(c39,s40,c52,c53,s53);
-    fulladder fa47(c40,s41,c53,c54,s54);
-    fulladder fa48(c41,p[7][7],c54,c55,s55);
-    
-    assign prod[0] = p[0][0];
-    assign prod[1] = s42;
-    assign prod[2] = s43;
-    assign prod[3] = s44;
-    assign prod[4] = s45;
-    assign prod[5] = s46;
-    assign prod[6] = s47;
-    assign prod[7] = s48;
-    assign prod[8] = s49;
-    assign prod[9] = s50;
-    assign prod[10] = s51;
-    assign prod[11] = s52;
-    assign prod[12] = s53;
-    assign prod[13] = s54;
-    assign prod[14] = s55;
-    assign prod[15] = c55;
-    //assign prod[1] = 
-    
+
+    // ---- Stage 1: reduce heights to <= 6 ----
+    // Column 6 (height 7 -> 6)
+    wire s1_w6, c1_w6;
+    halfadder ha1(pp[0][6], pp[1][5], c1_w6, s1_w6);
+
+    // Column 7 (height 8+1=9 -> 5)
+    wire s1_w7a, c1_w7a, s1_w7b, c1_w7b;
+    fulladder fa1(pp[0][7], pp[1][6], pp[2][5], c1_w7a, s1_w7a);
+    fulladder fa2(pp[3][4], pp[4][3], pp[5][2], c1_w7b, s1_w7b);
+
+    // Column 8 (height 7+2=9 -> 5)
+    wire s1_w8a, c1_w8a, s1_w8b, c1_w8b;
+    fulladder fa3(pp[1][7], pp[2][6], pp[3][5], c1_w8a, s1_w8a);
+    fulladder fa4(pp[4][4], pp[5][3], pp[6][2], c1_w8b, s1_w8b);
+
+    // Column 9 (height 6+2=8 -> 6)
+    wire s1_w9, c1_w9;
+    fulladder fa5(pp[2][7], pp[3][6], pp[4][5], c1_w9, s1_w9);
+
+    // ---- Stage 2: reduce heights to <= 4 ----
+    // Column 4 (height 5 -> 3)
+    wire s2_w4, c2_w4;
+    fulladder fa6(pp[0][4], pp[1][3], pp[2][2], c2_w4, s2_w4);
+
+    // Column 5 (height 6+1=7 -> 3)
+    wire s2_w5a, c2_w5a, s2_w5b, c2_w5b;
+    fulladder fa7(pp[0][5], pp[1][4], pp[2][3], c2_w5a, s2_w5a);
+    fulladder fa8(pp[3][2], pp[4][1], pp[5][0], c2_w5b, s2_w5b);
+
+    // Column 6 (height 6+2=8 -> 4)
+    wire s2_w6a, c2_w6a, s2_w6b, c2_w6b;
+    fulladder fa9(pp[2][4], pp[3][3], pp[4][2], c2_w6a, s2_w6a);
+    fulladder fa10(pp[5][1], pp[6][0], s1_w6, c2_w6b, s2_w6b);
+
+    // Column 7 (height 5+2=7 -> 3)
+    wire s2_w7a, c2_w7a, s2_w7b, c2_w7b;
+    fulladder fa11(pp[6][1], pp[7][0], c1_w6, c2_w7a, s2_w7a);
+    fulladder fa12(s1_w7a, s1_w7b, c2_w6a, c2_w7b, s2_w7b);
+
+    // Column 8 (height 5+2=7 -> 3)
+    wire s2_w8a, c2_w8a, s2_w8b, c2_w8b;
+    fulladder fa13(pp[7][1], c1_w7a, c1_w7b, c2_w8a, s2_w8a);
+    fulladder fa14(s1_w8a, s1_w8b, c2_w7a, c2_w8b, s2_w8b);
+
+    // Column 9 (height 6+2=8 -> 4)
+    wire s2_w9a, c2_w9a, s2_w9b, c2_w9b;
+    fulladder fa15(pp[5][4], pp[6][3], pp[7][2], c2_w9a, s2_w9a);
+    fulladder fa16(c1_w8a, c1_w8b, s1_w9, c2_w9b, s2_w9b);
+
+    // Column 10 (height 6+2=8 -> 4)
+    wire s2_w10a, c2_w10a, s2_w10b, c2_w10b;
+    fulladder fa17(pp[3][7], pp[4][6], pp[5][5], c2_w10a, s2_w10a);
+    fulladder fa18(pp[6][4], pp[7][3], c1_w9, c2_w10b, s2_w10b);
+
+    // Column 11 (height 4+2=6 -> 4)
+    wire s2_w11, c2_w11;
+    fulladder fa19(pp[4][7], pp[5][6], pp[6][5], c2_w11, s2_w11);
+
+    // ---- Stage 3: reduce heights to <= 3 ----
+    // Column 3 (height 4 -> 3)
+    wire s3_w3, c3_w3;
+    halfadder ha2(pp[0][3], pp[1][2], c3_w3, s3_w3);
+
+    // Column 4 (height 3+1=4 -> 3)
+    wire s3_w4, c3_w4;
+    halfadder ha3(pp[3][1], pp[4][0], c3_w4, s3_w4);
+
+    // Column 5 (height 3+1=4 -> 3)
+    wire s3_w5, c3_w5;
+    halfadder ha4(s2_w5a, s2_w5b, c3_w5, s3_w5);
+
+    // Column 6 (height 4+1=5 -> 3)
+    wire s3_w6, c3_w6;
+    fulladder fa20(c2_w5a, c2_w5b, s2_w6a, c3_w6, s3_w6);
+
+    // Column 7 (height 3+1=4 -> 3)
+    wire s3_w7, c3_w7;
+    halfadder ha5(s2_w7a, s2_w7b, c3_w7, s3_w7);
+
+    // Column 8 (height 3+1=4 -> 3)
+    wire s3_w8, c3_w8;
+    halfadder ha6(s2_w8a, s2_w8b, c3_w8, s3_w8);
+
+    // Column 9 (height 4+1=5 -> 3)
+    wire s3_w9, c3_w9;
+    fulladder fa21(c2_w8a, c2_w8b, s2_w9a, c3_w9, s3_w9);
+
+    // Column 10 (height 4+1=5 -> 3)
+    wire s3_w10, c3_w10;
+    fulladder fa22(c2_w9a, c2_w9b, s2_w10a, c3_w10, s3_w10);
+
+    // Column 11 (height 4+1=5 -> 3)
+    wire s3_w11, c3_w11;
+    fulladder fa23(pp[7][4], c2_w10a, c2_w10b, c3_w11, s3_w11);
+
+    // Column 12 (height 3+1=4 -> 3)
+    wire s3_w12, c3_w12;
+    fulladder fa24(pp[5][7], pp[6][6], pp[7][5], c3_w12, s3_w12);
+
+    // ---- Stage 4: reduce heights to <= 2 ----
+    // Column 2 (height 3 -> 2)
+    wire s4_w2, c4_w2;
+    halfadder ha7(pp[0][2], pp[1][1], c4_w2, s4_w2);
+
+    // Column 3 (height 3+1=4 -> 2)
+    wire s4_w3, c4_w3;
+    fulladder fa25(pp[2][1], pp[3][0], s3_w3, c4_w3, s4_w3);
+
+    // Column 4 (height 3+1=4 -> 2)
+    wire s4_w4, c4_w4;
+    fulladder fa26(s2_w4, c3_w3, s3_w4, c4_w4, s4_w4);
+
+    // Column 5 (height 3+1=4 -> 2)
+    wire s4_w5, c4_w5;
+    fulladder fa27(c2_w4, c3_w4, s3_w5, c4_w5, s4_w5);
+
+    // Column 6 (height 3+1=4 -> 2)
+    wire s4_w6, c4_w6;
+    fulladder fa28(s2_w6b, c3_w5, s3_w6, c4_w6, s4_w6);
+
+    // Column 7 (height 3+1=4 -> 2)
+    wire s4_w7, c4_w7;
+    fulladder fa29(c2_w6b, c3_w6, s3_w7, c4_w7, s4_w7);
+
+    // Column 8 (height 3+1=4 -> 2)
+    wire s4_w8, c4_w8;
+    fulladder fa30(c2_w7b, c3_w7, s3_w8, c4_w8, s4_w8);
+
+    // Column 9 (height 3+1=4 -> 2)
+    wire s4_w9, c4_w9;
+    fulladder fa31(s2_w9b, c3_w8, s3_w9, c4_w9, s4_w9);
+
+    // Column 10 (height 3+1=4 -> 2)
+    wire s4_w10, c4_w10;
+    fulladder fa32(s2_w10b, c3_w9, s3_w10, c4_w10, s4_w10);
+
+    // Column 11 (height 3+1=4 -> 2)
+    wire s4_w11, c4_w11;
+    fulladder fa33(s2_w11, c3_w10, s3_w11, c4_w11, s4_w11);
+
+    // Column 12 (height 3+1=4 -> 2)
+    wire s4_w12, c4_w12;
+    fulladder fa34(c2_w11, c3_w11, s3_w12, c4_w12, s4_w12);
+
+    // Column 13 (height 2+1=3 -> 2)
+    wire s4_w13, c4_w13;
+    fulladder fa35(pp[6][7], pp[7][6], c3_w12, c4_w13, s4_w13);
+
+    // ---- Final stage: carry-propagate addition of the two remaining rows ----
+    assign prod[0] = pp[0][0];
+
+    wire f_c1, f_c2, f_c3, f_c4, f_c5, f_c6, f_c7, f_c8, f_c9, f_c10, f_c11, f_c12, f_c13, f_c14;
+
+    halfadder haf1(pp[0][1], pp[1][0], f_c1, prod[1]);
+    fulladder faf2(pp[2][0], s4_w2, f_c1, f_c2, prod[2]);
+    fulladder faf3(c4_w2, s4_w3, f_c2, f_c3, prod[3]);
+    fulladder faf4(c4_w3, s4_w4, f_c3, f_c4, prod[4]);
+    fulladder faf5(c4_w4, s4_w5, f_c4, f_c5, prod[5]);
+    fulladder faf6(c4_w5, s4_w6, f_c5, f_c6, prod[6]);
+    fulladder faf7(c4_w6, s4_w7, f_c6, f_c7, prod[7]);
+    fulladder faf8(c4_w7, s4_w8, f_c7, f_c8, prod[8]);
+    fulladder faf9(c4_w8, s4_w9, f_c8, f_c9, prod[9]);
+    fulladder faf10(c4_w9, s4_w10, f_c9, f_c10, prod[10]);
+    fulladder faf11(c4_w10, s4_w11, f_c10, f_c11, prod[11]);
+    fulladder faf12(c4_w11, s4_w12, f_c11, f_c12, prod[12]);
+    fulladder faf13(c4_w12, s4_w13, f_c12, f_c13, prod[13]);
+    fulladder faf14(pp[7][7], c4_w13, f_c13, f_c14, prod[14]);
+    assign prod[15] = f_c14;
+
 endmodule
-
-
 
 module fulladder(a, b, cin, cout, sum);
     input a, b, cin;
     output cout, sum;
-
     wire x, y, z;
-
     assign x = a ^ b;
     assign y = a & b;
     assign sum = x ^ cin;
