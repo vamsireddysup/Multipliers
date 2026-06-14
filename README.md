@@ -84,7 +84,7 @@ effort across all folders. Status values: Pending, Done.
 | radix8_32bit_multiplier | Multiplier | Pending |
 | radix8_8bit_structmul | Multiplier | Pending |
 | shift_and_add_multiplier_8bit | Multiplier | Pending |
-| wallace_tree_multiplier | Multiplier | Pending |
+| wallace_tree_multiplier | Multiplier | Done |
 | radix4_8bit_compres | Multiplier (unconfirmed) | Pending |
 | brent_kung_adder_8bit | Adder | Pending |
 | carry_propagate | Adder | Pending |
