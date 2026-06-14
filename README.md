@@ -59,7 +59,7 @@ effort across all folders. Status values: Pending, Done.
 | array_multiplier_8bit | Multiplier | Done |
 | Array_Multiplier | Multiplier | Pending |
 | baugh_wooley_multiplier_8bit | Multiplier | Done |
-| dadda_multiplier_8bit | Multiplier | Pending |
+| dadda_multiplier_8bit | Multiplier | Done |
 | kulkarni_multiplier | Multiplier | Pending |
 | ma_x_fa | Multiplier | Pending |
 | radix_4_4bit_multiplier | Multiplier | Pending |
